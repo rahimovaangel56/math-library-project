@@ -11,6 +11,9 @@ namespace MathLibrary
         /// <summary>
         /// Складывает два числа.
         /// </summary>
+        /// <param name="a">Первое слагаемое</param>
+        /// <param name="b">Второе слагаемое</param>
+        /// <returns>Сумма двух чисел</returns>
         public static double Add(double a, double b)
         {
             return a + b;
@@ -19,6 +22,9 @@ namespace MathLibrary
         /// <summary>
         /// Вычитает второе число из первого.
         /// </summary>
+        /// <param name="a">Уменьшаемое</param>
+        /// <param name="b">Вычитаемое</param>
+        /// <returns>Разность чисел</returns>
         public static double Subtract(double a, double b)
         {
             return a - b;
@@ -27,6 +33,9 @@ namespace MathLibrary
         /// <summary>
         /// Умножает два числа.
         /// </summary>
+        /// <param name="a">Первый множитель</param>
+        /// <param name="b">Второй множитель</param>
+        /// <returns>Произведение чисел</returns>
         public static double Multiply(double a, double b)
         {
             return a * b;
@@ -35,6 +44,10 @@ namespace MathLibrary
         /// <summary>
         /// Делит первое число на второе.
         /// </summary>
+        /// <param name="a">Делимое</param>
+        /// <param name="b">Делитель</param>
+        /// <returns>Результат деления</returns>
+        /// <exception cref="DivideByZeroException">Выбрасывается при попытке деления на ноль</exception>
         public static double Divide(double a, double b)
         {
             if (b == 0)
@@ -47,104 +60,98 @@ namespace MathLibrary
         /// <summary>
         /// Проверяет, является ли число простым.
         /// </summary>
+        /// <param name="number">Проверяемое число</param>
+        /// <returns>true, если число простое; иначе false</returns>
         public static bool IsPrime(int number)
         {
-            // Проверка на отрицательные числа, 0 и 1
-            if (number <= 1)
-                return false;
-            
-            // Проверка на четные числа (кроме 2)
-            if (number == 2)
-                return true;
-            if (number % 2 == 0)
-                return false;
-            
-            // Проверка делителей до квадратного корня из числа
-            int boundary = (int)Math.Floor(Math.Sqrt(number));
-            
-            for (int i = 3; i <= boundary; i += 2)
+            if (number <= 1) return false;
+            if (number == 2) return true;
+            if (number % 2 == 0) return false;
+
+            for (int i = 3; i <= Math.Sqrt(number); i += 2)
             {
-                if (number % i == 0)
-                    return false;
+                if (number % i == 0) return false;
             }
-            
             return true;
         }
 
         /// <summary>
-        /// Возводит число в степень.
+        /// Возводит число в указанную степень.
         /// </summary>
+        /// <param name="number">Основание степени</param>
+        /// <param name="power">Показатель степени</param>
+        /// <returns>Результат возведения в степень</returns>
         public static double Power(double number, double power)
         {
             return Math.Pow(number, power);
         }
 
         /// <summary>
-        /// Вычисляет факториал числа.
+        /// Вычисляет факториал целого неотрицательного числа.
         /// </summary>
+        /// <param name="n">Целое неотрицательное число</param>
+        /// <returns>Факториал числа n (n!)</returns>
+        /// <exception cref="ArgumentException">Выбрасывается, если n отрицательное</exception>
         public static long Factorial(int n)
         {
-            // Проверка на отрицательное число
             if (n < 0)
-            {
-                throw new ArgumentException("Факториал отрицательного числа не определен.");
-            }
-            
-            // Базовый случай
-            if (n == 0 || n == 1)
-                return 1;
-            
-            // Рекурсивное вычисление
+                throw new ArgumentException("Факториал отрицательного числа не определен");
+
             long result = 1;
-            for (int i = 2; i <= n; i++)
-            {
+            for (int i = 1; i <= n; i++)
                 result *= i;
-            }
-            
             return result;
         }
 
         /// <summary>
-        /// Решает квадратное уравнение ax² + bx + c = 0.
+        /// Решает квадратное уравнение вида ax² + bx + c = 0
         /// </summary>
-        /// <returns>true, если уравнение имеет действительные корни, иначе false</returns>
+        /// <param name="a">Коэффициент при x²</param>
+        /// <param name="b">Коэффициент при x</param>
+        /// <param name="c">Свободный член</param>
+        /// <param name="x1">Первый корень (выходной параметр)</param>
+        /// <param name="x2">Второй корень (выходной параметр)</param>
+        /// <returns>
+        /// true - если уравнение имеет действительные корни,
+        /// false - если действительных корней нет
+        /// </returns>
         public static bool SolveQuadratic(double a, double b, double c, out double? x1, out double? x2)
         {
             x1 = null;
             x2 = null;
-            
-            // Проверка на линейное уравнение (a = 0)
-            if (a == 0)
+
+            // Случай: не квадратное уравнение (a = 0)
+            if (Math.Abs(a) < double.Epsilon)
             {
-                if (b == 0)
-                {
-                    // Если a=0 и b=0, то либо нет решений, либо бесконечно много
-                    return c == 0; // Если c=0, то бесконечно много решений
-                }
-                
                 // Линейное уравнение bx + c = 0
-                x1 = -c / b;
-                return true;
+                if (Math.Abs(b) > double.Epsilon)
+                {
+                    x1 = -c / b;
+                    return true;
+                }
+                // 0*x + c = 0
+                return Math.Abs(c) < double.Epsilon; // true если c=0 (бесконечно много решений), false если c≠0
             }
-            
-            // Вычисление дискриминанта
+
+            // Вычисляем дискриминант
             double discriminant = b * b - 4 * a * c;
-            
+
+            // Нет действительных корней
             if (discriminant < 0)
-            {
-                return false; // Действительных корней нет
-            }
-            else if (Math.Abs(discriminant) < 1e-10) // Дискриминант близок к нулю
+                return false;
+
+            // Один корень (дискриминант = 0)
+            if (Math.Abs(discriminant) < double.Epsilon)
             {
                 x1 = -b / (2 * a);
                 return true;
             }
-            else
-            {
-                x1 = (-b + Math.Sqrt(discriminant)) / (2 * a);
-                x2 = (-b - Math.Sqrt(discriminant)) / (2 * a);
-                return true;
-            }
+
+            // Два корня
+            double sqrtDiscriminant = Math.Sqrt(discriminant);
+            x1 = (-b - sqrtDiscriminant) / (2 * a);
+            x2 = (-b + sqrtDiscriminant) / (2 * a);
+            return true;
         }
     }
 }
