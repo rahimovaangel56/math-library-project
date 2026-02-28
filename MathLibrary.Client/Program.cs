@@ -1,6 +1,7 @@
 ﻿using System;
 using MathLibrary;
 
+// Тестовое приложение для демонстрации всех возможностей MathLibrary
 namespace MathLibrary.Client
 {
     class Program
